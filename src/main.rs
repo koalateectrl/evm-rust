@@ -1,3 +1,7 @@
+mod stack;
+mod memory;
+
+
 fn main() {
-    println!("Hello, world!");
+    println!("hello world");
 }
