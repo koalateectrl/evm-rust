@@ -7,9 +7,9 @@ pub struct Stack {
 }
 
 impl Stack {
-    pub fn new(max_depth: usize) -> Stack {
+    pub fn new() -> Stack {
         let stack: Vec<U256> = Vec::new();
-        Stack { stack, max_depth }
+        Stack { stack, max_depth: 1024 }
     }
 
     pub fn push(&mut self, item: U256) {
@@ -36,14 +36,14 @@ mod tests {
 
     #[test]
     fn new_should_empty() {
-        let test_stack = Stack::new(1024);
+        let test_stack = Stack::new();
         let empty_stack: Vec<U256> = Vec::new();
         assert_eq!(test_stack.stack, empty_stack);
     }
 
     #[test]
     fn push_should_append() {
-        let mut test_stack = Stack::new(1024);
+        let mut test_stack = Stack::new();
         test_stack.push(U256::new(25));
         test_stack.push(U256::new(45));
         assert_eq!(test_stack.stack, vec![25, 45]);
@@ -52,13 +52,13 @@ mod tests {
     #[test]
     #[should_panic(expected = "Stack underflow")]
     fn pop_empty_should_panic() {
-        let mut test_stack = Stack::new(1024);
+        let mut test_stack = Stack::new();
         test_stack.pop();
     }
 
     #[test]
     fn pop_value_should_correct() {
-        let mut test_stack = Stack::new(1024);
+        let mut test_stack = Stack::new();
         test_stack.push(U256::new(56));
         test_stack.push(U256::new(99));
         match test_stack.pop() {

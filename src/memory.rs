@@ -1,16 +1,16 @@
 use ethnum::U256;
 
 #[derive(Debug)]
-struct Memory {
+pub struct Memory {
     memory: Vec<U256>,
 }
 
 impl Memory {
-    fn new() -> Memory {
+    pub fn new() -> Memory {
         Memory { memory: Vec::new() }
     }
 
-    fn store(&mut self, offset: usize, value: U256) {
+    pub fn store(&mut self, offset: usize, value: U256) {
         if offset > std::usize::MAX {
             panic!("Invalid memory access");
         }
@@ -26,7 +26,7 @@ impl Memory {
         self.memory[offset] = value;
     }
 
-    fn load(&self, offset: usize) -> U256 {
+    pub fn load(&self, offset: usize) -> U256 {
         if offset >= self.memory.len() {
             return U256::new(0);
         }
