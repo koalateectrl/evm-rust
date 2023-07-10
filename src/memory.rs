@@ -2,7 +2,7 @@ use ethnum::U256;
 
 #[derive(Debug)]
 pub struct Memory {
-    memory: Vec<U256>,
+    memory: Vec<ethnum::U256>,
 }
 
 impl Memory {
@@ -10,7 +10,7 @@ impl Memory {
         Memory { memory: Vec::new() }
     }
 
-    pub fn store(&mut self, offset: usize, value: U256) {
+    pub fn store(&mut self, offset: usize, value: ethnum::U256) {
         if offset > std::usize::MAX {
             panic!("Invalid memory access");
         }
@@ -42,7 +42,7 @@ mod tests {
     #[test]
     fn new_should_empty() {
         let test_memory: Memory = Memory::new();
-        let empty_memory: Vec<U256> = Vec::new();
+        let empty_memory: Vec<ethnum::U256> = Vec::new();
         assert_eq!(test_memory.memory, empty_memory);
     }
 

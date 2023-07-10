@@ -2,17 +2,17 @@ use ethnum::U256;
 
 #[derive(Debug)]
 pub struct Stack {
-    stack: Vec<U256>,
+    stack: Vec<ethnum::U256>,
     max_depth: usize,
 }
 
 impl Stack {
     pub fn new() -> Stack {
-        let stack: Vec<U256> = Vec::new();
+        let stack: Vec<ethnum::U256> = Vec::new();
         Stack { stack, max_depth: 1024 }
     }
 
-    pub fn push(&mut self, item: U256) {
+    pub fn push(&mut self, item: ethnum::U256) {
 
         if (self.stack.len() + 1) > self.max_depth {
             panic!("Stack overflow");
@@ -21,7 +21,7 @@ impl Stack {
         self.stack.push(item);
     }
 
-    pub fn pop(&mut self) -> Option<U256> {
+    pub fn pop(&mut self) -> Option<ethnum::U256> {
         if self.stack.len() == 0 {
             panic!("Stack underflow");
         }
@@ -37,7 +37,7 @@ mod tests {
     #[test]
     fn new_should_empty() {
         let test_stack = Stack::new();
-        let empty_stack: Vec<U256> = Vec::new();
+        let empty_stack: Vec<ethnum::U256> = Vec::new();
         assert_eq!(test_stack.stack, empty_stack);
     }
 

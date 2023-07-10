@@ -1,8 +1,7 @@
 use std::collections::HashMap;
 
-use hex;
-use crate::stack;
-use crate::memory;
+use super::stack;
+use super::memory;
 use ethnum::U256;
 
 pub struct ExecutionContext {
@@ -37,14 +36,14 @@ impl ExecutionContext {
         self.stopped = true;
     }
 
-    pub fn read_code(&mut self, num_bytes: usize) -> U256 {
+    pub fn read_code(&mut self, num_bytes: usize) -> ethnum::U256 {
         let value = Self::vec_to_u256(&self.code, self.pc, self.pc + num_bytes);
         self.pc += num_bytes;
         value
     }
 
     // Helper function
-    fn vec_to_u256(bytes: &Vec<u8>, start: usize, end: usize) -> U256 {
+    fn vec_to_u256(bytes: &Vec<u8>, start: usize, end: usize) -> ethnum::U256 {
         let mut result = U256::new(0);
         for i in start..end {
             result = (result << 8) | U256::new(bytes[i].into());
