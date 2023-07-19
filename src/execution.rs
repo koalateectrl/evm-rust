@@ -11,6 +11,7 @@ pub struct ExecutionContext {
     pub pc: usize,
     pub stopped: bool,
     instruction_map: HashMap<u128, String>,
+    return_data: Vec<u8>,
 }
 
 impl ExecutionContext {
@@ -20,7 +21,9 @@ impl ExecutionContext {
         instruction_map_.insert(0, "STOP".to_string());
         instruction_map_.insert(1, "ADD".to_string());
         instruction_map_.insert(2, "MUL".to_string());
+        instruction_map_.insert(83, "MSTORE8".to_string());
         instruction_map_.insert(96, "PUSH1".to_string());
+        instruction_map_.insert(243, "RETURN".to_string());
 
         ExecutionContext { 
             code: bytecode_as_bytes, 
@@ -29,11 +32,17 @@ impl ExecutionContext {
             pc: 0, 
             stopped: false,
             instruction_map: instruction_map_,
+            return_data: Vec::new(),
         }
     }
 
     pub fn stop(&mut self) {
         self.stopped = true;
+    }
+
+    pub fn set_return_data(&mut self, offset: usize, length: usize) {
+        self.stop();
+        self.return_data = self.memory.load_range(offset, length);
     }
 
     pub fn read_code(&mut self, num_bytes: usize) -> ethnum::U256 {
@@ -71,24 +80,34 @@ impl ExecutionContext {
             let instruction = self.decode_opcode();
             self.run_instruction(&instruction);
         }
+
+        println!("Output: {:?}", self.return_data);
     }
 
     pub fn run_instruction(&mut self, instruction: &u128) {
         match instruction {
             0 => self.stop(),
             1 => {
-                    let first_pop = self.stack.pop().unwrap();
-                    let second_pop = self.stack.pop().unwrap();
+                    let first_pop = self.stack.pop();
+                    let second_pop = self.stack.pop();
                     self.stack.push(first_pop + second_pop);
             },
             2 => {
-                    let first_pop = self.stack.pop().unwrap();
-                    let second_pop = self.stack.pop().unwrap();
+                    let first_pop = self.stack.pop();
+                    let second_pop = self.stack.pop();
                     self.stack.push(first_pop * second_pop);
+            },
+            83 => {
+                self.memory.store(self.stack.pop().as_usize(), (self.stack.pop().as_u128() % 256) as u8);
             },
             96 => {
                 let read_value = self.read_code(1);
                 self.stack.push(read_value);
+            },
+            243 => {
+                let first_pop = self.stack.pop();
+                let second_pop = self.stack.pop();
+                self.set_return_data(first_pop.as_usize(), second_pop.as_usize());
             }, 
             _ => panic!("Invalid instruction"),
         }
@@ -131,5 +150,11 @@ mod tests {
         assert_eq!(test_ec.read_code(1), 96);
         assert_eq!(test_ec.read_code(1), 6);
         assert_eq!(test_ec.read_code(3), 6293250);
+    }
+
+    #[test]
+    fn no_panic_without_stop() {
+        let mut test_ec = ExecutionContext::new("6006600702");
+        test_ec.run();
     }
 }

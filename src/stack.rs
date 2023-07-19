@@ -1,5 +1,3 @@
-use ethnum::U256;
-
 #[derive(Debug)]
 pub struct Stack {
     stack: Vec<ethnum::U256>,
@@ -21,12 +19,12 @@ impl Stack {
         self.stack.push(item);
     }
 
-    pub fn pop(&mut self) -> Option<ethnum::U256> {
+    pub fn pop(&mut self) -> ethnum::U256 {
         if self.stack.len() == 0 {
             panic!("Stack underflow");
         }
 
-        self.stack.pop()
+        self.stack.pop().unwrap()
     }
 }
 
@@ -44,8 +42,8 @@ mod tests {
     #[test]
     fn push_should_append() {
         let mut test_stack = Stack::new();
-        test_stack.push(U256::new(25));
-        test_stack.push(U256::new(45));
+        test_stack.push(ethnum::U256::new(25));
+        test_stack.push(ethnum::U256::new(45));
         assert_eq!(test_stack.stack, vec![25, 45]);
     }
 
@@ -59,12 +57,9 @@ mod tests {
     #[test]
     fn pop_value_should_correct() {
         let mut test_stack = Stack::new();
-        test_stack.push(U256::new(56));
-        test_stack.push(U256::new(99));
-        match test_stack.pop() {
-            Some(value) => assert_eq!(99, value),
-            None => panic!("Pushed 2 items, popped only 1"),
-        }
+        test_stack.push(ethnum::U256::new(56));
+        test_stack.push(ethnum::U256::new(99));
+        assert_eq!(99, test_stack.pop());
         
     }
 }
